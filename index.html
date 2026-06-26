@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Zone | Acompanhantes e Namoradas de Aluguel</title>
+    <style>
+        /* --- ESTILOS CSS --- */
+        :root {
+            --primary: #ff2a6d;
+            --secondary: #05d9e8;
+            --dark-bg: #0a0a12;
+            --card-bg: #151522;
+            --text-color: #ffffff;
+            --text-muted: #a0a0b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background-color: rgba(21, 21, 34, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 42, 109, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+            cursor: pointer;
+        }
+
+        .logo span { color: var(--text-color); }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover { color: var(--primary); }
+
+        .btn-nav-portal {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-nav-portal:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+        }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(rgba(10, 10, 18, 0.7), var(--dark-bg)), url('https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1974&auto=format&fit=crop') center/cover;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .hero h1 { font-size: 48px; margin-bottom: 20px; }
+        .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px; }
+
+        .filters { display: flex; justify-content: center; gap: 15px; padding: 30px 5%; flex-wrap: wrap; }
+        .filter-select {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 42, 109, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .grid-container { padding: 0 5% 80px; }
+        .profile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+
+        .profile-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 42, 109, 0.2);
+            border-color: var(--primary);
+        }
+
+        .image-container { position: relative; height: 350px; width: 100%; }
+        .profile-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .tag-disponivel {
+            position: absolute; top: 15px; left: 15px; background-color: #00ff66; color: #000;
+            padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
+        }
+
+        .profile-info { padding: 20px; }
+        .profile-name-age { display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: bold; }
+        .profile-location { color: var(--secondary); font-size: 14px; margin-bottom: 10px; }
+        .profile-details { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; height: 42px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .profile-price { font-size: 18px; color: var(--primary); font-weight: bold; margin-bottom: 15px; }
+        
+        .btn-contact { display: block; width: 100%; background: linear-gradient(45deg, var(--primary), #b0003a); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+
+        .auth-container { max-width: 450px; margin: 60px auto; padding: 40px; background-color: var(--card-bg); border-radius: 15px; border: 1px solid rgba(255, 42, 109, 0.2); }
+        .auth-container h2 { margin-bottom: 20px; color: var(--primary); text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+        .form-control { width: 100%; padding: 12px 15px; background-color: var(--dark-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; }
+        
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--secondary), #00a8b5); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .btn-submit.primary-btn { background: linear-gradient(45deg, var(--primary), #b0003a); color: white; }
+        .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
+        .auth-switch span { color: var(--secondary); cursor: pointer; text-decoration: underline; }
+
+        .panel-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+
+        footer { background-color: #05050a; text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // ⚠️ SUBSTITUA O OBJETO ABAIXO PELAS CONFIGURAÇÕES DO SEU PROJETO NO FIREBASE ⚠️
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_AUTH_DOMAIN",
+            databaseURL: "SUA_DATABASE_URL",
+            projectId: "SEU_PROJECT_ID",
+            storageBucket: "SEU_STORAGE_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicializa o Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Sessão Global do Usuário Logado
+        let usuarioLogado = null;
+
+        // Elementos DOM de Telas
+        const secoes = {
+            home: document.getElementById('section-home'),
+            login: document.getElementById('section-login'),
+            register: document.getElementById('section-register'),
+            dashboard: document.getElementById('section-dashboard')
+        };
+
+        function navegarPara(secaoAtiva) {
+            Object.values(secoes).forEach(sec => sec.classList.remove('active'));
+            secoes[secaoAtiva].classList.add('active');
+            window.scrollTo(0,0);
+            if(secaoAtiva === 'home') renderPerfis();
+        }
+
+        // Navegação básica de botões
+        document.getElementById('logo-home').addEventListener('click', () => navegarPara('home'));
+        document.getElementById('nav-home').addEventListener('click', () => navegarPara('home'));
+        document.getElementById('go-to-register').addEventListener('click', () => navegarPara('register'));
+        document.getElementById('go-to-login').addEventListener('click', () => navegarPara('login'));
+        
+        document.getElementById('btn-portal').addEventListener('click', () => {
+            if (usuarioLogado) navegarPara('dashboard');
+            else navegarPara('login');
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            usuarioLogado = null;
+            document.getElementById('btn-portal').innerText = "Portal da Modelo";
+            navegarPara('home');
+        });
+
+        // --- CADASTRO NO FIREBASE ---
+        document.getElementById('form-register').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const userIn = document.getElementById('reg-username').value.trim().toLowerCase();
+            const passIn = document.getElementById('reg-password').value;
+
+            const dbRef = ref(db);
+            try {
+                const snapshot = await get(child(dbRef, `usuarios/${userIn}`));
+                if (snapshot.exists()) {
+                    alert("Este usuário já existe.");
+                    return;
+                }
+                
+                // Salva novo usuário no Firebase
+                await set(ref(db, 'usuarios/' + userIn), { password: passIn });
+                alert("Conta criada com sucesso!");
+                document.getElementById('form-register').reset();
+                navegarPara('login');
+            } catch (error) {
+                alert("Erro ao cadastrar: " + error.message);
+            }
+        });
+
+        // --- LOGIN NO FIREBASE ---
+        document.getElementById('form-login').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const userIn = document.getElementById('login-username').value.trim().toLowerCase();
+            const passIn = document.getElementById('login-password').value;
+
+            const dbRef = ref(db);
+            try {
+                const snapshot = await get(child(dbRef, `usuarios/${userIn}`));
+                if (snapshot.exists() && snapshot.val().password === passIn) {
+                    usuarioLogado = userIn;
+                    document.getElementById('btn-portal').innerText = "Meu Painel";
+                    document.getElementById('user-display-name').innerText = userIn;
+                    
+                    // Carrega dados do perfil se houver
+                    const perfSnapshot = await get(child(dbRef, `perfis/${userIn}`));
+                    if(perfSnapshot.exists()) {
+                        const p = perfSnapshot.val();
+                        document.getElementById('prof-nome').value = p.nome || '';
+                        document.getElementById('prof-idade').value = p.idade || '';
+                        document.getElementById('prof-cidade').value = p.cidade || 'Uberlândia';
+                        document.getElementById('prof-servico').value = p.servico || 'Namorada de Aluguel';
+                        document.getElementById('prof-valor').value = p.valor || '';
+                        document.getElementById('prof-imagem').value = p.imagem || '';
+                        document.getElementById('prof-descricao').value = p.descricao || '';
+                    } else {
+                        document.getElementById('form-profile').reset();
+                    }
+                    
+                    navegarPara('dashboard');
+                    document.getElementById('form-login').reset();
+                } else {
+                    alert("Usuário ou senha incorretos.");
+                }
+            } catch (error) {
+                alert("Erro ao fazer login: " + error.message);
+            }
+        });
+
+        // --- ATUALIZAR/SALVAR PERFIL ---
+        document.getElementById('form-profile').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if(!usuarioLogado) return;
+
+            const novoPerfil = {
+                username: usuarioLogado,
+                nome: document.getElementById('prof-nome').value,
+                idade: parseInt(document.getElementById('prof-idade').value),
+                cidade: document.getElementById('prof-cidade').value,
+                servico: document.getElementById('prof-servico').value,
+                valor: document.getElementById('prof-valor').value,
+                imagem: document.getElementById('prof-imagem').value,
+                descricao: document.getElementById('prof-descricao').value
+            };
+
+            try {
+                await set(ref(db, 'perfis/' + usuarioLogado), novoPerfil);
+                alert("Perfil atualizado em tempo real para todos os usuários!");
+                navegarPara('home');
+            } catch (error) {
+                alert("Erro ao salvar perfil: " + error.message);
+            }
+        });
+
+        // --- MOSTRAR PERFIS NA HOME ---
+        const container = document.getElementById('profile-container');
+        const cityFilter = document.getElementById('filter-city');
+        const serviceFilter = document.getElementById('filter-service');
+
+        async function renderPerfis() {
+            container.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Carregando perfis reais...</p>";
+            
+            try {
+                const snapshot = await get(child(ref(db), 'perfis'));
+                container.innerHTML = "";
+                
+                let listaPerfis = [];
+                if (snapshot.exists()) {
+                    // Transforma o objeto do Firebase em array
+                    Object.values(snapshot.val()).forEach(p => listaPerfis.push(p));
+                }
+
+                const cidadeSelecionada = cityFilter.value;
+                const servicoSelecionado = serviceFilter.value;
+
+                const filtrados = listaPerfis.filter(perfil => {
+                    const bateCidade = cidadeSelecionada === 'todos' || perfil.cidade === cidadeSelecionada;
+                    const bateServico = servicoSelecionado === 'todos' || perfil.servico === servicoSelecionado;
+                    return bateCidade && bateServico;
+                });
+                
+                if(filtrados.length === 0) {
+                    container.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--text-muted);">Nenhum perfil cadastrado ou encontrado para os filtros.</p>`;
+                    return;
+                }
+
+                filtrados.forEach(perfil => {
+                    const card = document.createElement('div');
+                    card.className = 'profile-card';
+                    card.innerHTML = `
+                        <div class="image-container">
+                            <span class="tag-disponivel">Disponível</span>
+                            <img src="${perfil.imagem}" alt="${perfil.nome}" class="profile-img" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'">
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name-age">${perfil.nome}, ${perfil.idade}</div>
+                            <div class="profile-location">📍 ${perfil.cidade}</div>
+                            <div class="profile-details">${perfil.descricao}</div>
+                            <div class="profile-price">${perfil.valor}</div>
+                            <a href="https://wa.me/5500000000000?text=Olá%20${encodeURIComponent(perfil.nome)},%20vi%20seu%20perfil%20no%20Love%20Zone" target="_blank" class="btn-contact">Ver WhatsApp</a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                container.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Erro ao carregar dados do servidor.</p>";
+            }
+        }
+
+        cityFilter.addEventListener('change', renderPerfis);
+        serviceFilter.addEventListener('change', renderPerfis);
+
+        // Inicializa puxando os dados reais
+        renderPerfis();
+    </script>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="logo-home">Love<span>Zone</span></div>
+        <nav>
+            <a id="nav-home">Início</a>
+            <button class="btn-nav-portal" id="btn-portal">Portal da Modelo</button>
+        </nav>
+    </header>
+
+    <div id="section-home" class="page-section active">
+        <section class="hero">
+            <h1>Encontre a Companhia Perfeita</h1>
+            <p>Namoradas de aluguel e acompanhantes exclusivas para jantares, eventos, viagens ou momentos inesquecíveis.</p>
+        </section>
+
+        <div class="filters">
+            <select class="filter-select" id="filter-city">
+                <option value="todos">Todas as Cidades</option>
+                <option value="Uberlândia">Uberlândia</option>
+                <option value="São Paulo">São Paulo</option>
+                <option value="Rio de Janeiro">Rio de Janeiro</option>
+            </select>
+
+            <select class="filter-select" id="filter-service">
+                <option value="todos">Todos os Serviços</option>
+                <option value="Namorada de Aluguel">Namorada de Aluguel</option>
+                <option value="Eventos e Jantares">Eventos e Jantares</option>
+                <option value="Viagens">Viagens / Fim de Semana</option>
+            </select>
+        </div>
+
+        <main class="grid-container">
+            <div class="profile-grid" id="profile-container"></div>
+        </main>
+    </div>
+
+    <div id="section-login" class="page-section">
+        <div class="auth-container">
+            <h2>Acessar Minha Conta</h2>
+            <form id="form-login">
+                <div class="form-group">
+                    <label>Usuário (Username)</label>
+                    <input type="text" id="login-username" class="form-control" required placeholder="Seu usuário">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="login-password" class="form-control" required placeholder="Sua senha">
+                </div>
+                <button type="submit" class="btn-submit primary-btn">Entrar</button>
+            </form>
+            <div class="auth-switch">
+                Não tem uma conta? <span id="go-to-register">Cadastre-se aqui</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-register" class="page-section">
+        <div class="auth-container">
+            <h2>Criar Conta de Modelo</h2>
+            <form id="form-register">
+                <div class="form-group">
+                    <label>Escolha um Nome de Usuário</label>
+                    <input type="text" id="reg-username" class="form-control" required placeholder="Ex: melissa_ribeiro">
+                </div>
+                <div class="form-group">
+                    <label>Crie uma Senha</label>
+                    <input type="password" id="reg-password" class="form-control" required placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn-submit">Criar Conta</button>
+            </form>
+            <div class="auth-switch">
+                Já possui conta? <span id="go-to-login">Faça Login</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-dashboard" class="page-section">
+        <div class="panel-container">
+            <div class="panel-header">
+                <h2>Área da Modelo: <span id="user-display-name" style="color: var(--secondary);"></span></h2>
+                <button class="btn-nav-portal" id="btn-logout" style="border-color: #ff3333; color: #ff3333;">Sair</button>
+            </div>
+            
+            <div class="auth-container" style="max-width: 100%; margin: 0;">
+                <h3 style="margin-bottom: 20px; color: var(--secondary);">Configurar Informações do Perfil Público</h3>
+                <form id="form-profile">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Nome Artístico</label>
+                            <input type="text" id="prof-nome" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Idade</label>
+                            <input type="number" id="prof-idade" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Cidade de Atendimento</label>
+                            <select id="prof-cidade" class="form-control" required>
+                                <option value="Uberlândia">Uberlândia</option>
+                                <option value="São Paulo">São Paulo</option>
+                                <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Especialidade Principal</label>
+                            <select id="prof-servico" class="form-control" required>
+                                <option value="Namorada de Aluguel">Namorada de Aluguel</option>
+                                <option value="Eventos e Jantares">Eventos e Jantares</option>
+                                <option value="Viagens">Viagens / Fim de Semana</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preço e Cobrança</label>
+                        <input type="text" id="prof-valor" class="form-control" required placeholder="Ex: R$ 300 / hora">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL de uma Foto de Perfil (Link de Imagem pública)</label>
+                        <input type="url" id="prof-imagem" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição / Apresentação Pessoal</label>
+                        <textarea id="prof-descricao" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit primary-btn">Salvar e Publicar Perfil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Love Zone. Todos os direitos reservados.</p>
+        <p style="margin-top: 10px; font-size: 12px; color: #666;">Conteúdo destinado estritamente para maiores de 18 anos.</p>
+    </footer>
+</body>
+</html>
