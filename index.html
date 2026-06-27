@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Love Zone | Acompanhantes e Namoradas de Aluguel</title>
     <style>
-        /* --- ESTILOS CSS --- */
+        /* --- ESTILOS NATIVOS E MODERNOS (CSS) --- */
         :root {
             --primary: #ff2a6d;
             --secondary: #05d9e8;
@@ -95,7 +95,7 @@
             border-bottom: 2px solid var(--primary);
         }
 
-        .hero h1 { font-size: 48px; margin-bottom: 20px; }
+        .hero h1 { font-size: 48px; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255, 42, 109, 0.3); }
         .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px; }
 
         .filters { display: flex; justify-content: center; gap: 15px; padding: 30px 5%; flex-wrap: wrap; }
@@ -107,6 +107,7 @@
             border-radius: 25px;
             outline: none;
             cursor: pointer;
+            font-size: 14px;
         }
 
         .grid-container { padding: 0 5% 80px; }
@@ -127,62 +128,66 @@
             border-color: var(--primary);
         }
 
-        .image-container { position: relative; height: 350px; width: 100%; }
+        .image-container { position: relative; height: 380px; width: 100%; }
         .profile-img { width: 100%; height: 100%; object-fit: cover; }
         
         .tag-disponivel {
             position: absolute; top: 15px; left: 15px; background-color: #00ff66; color: #000;
             padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
         }
 
         .profile-info { padding: 20px; }
-        .profile-name-age { display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: bold; }
-        .profile-location { color: var(--secondary); font-size: 14px; margin-bottom: 10px; }
+        .profile-name-age { display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .profile-location { color: var(--secondary); font-size: 14px; margin-bottom: 10px; font-weight: 500; }
         .profile-details { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; height: 42px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .profile-price { font-size: 18px; color: var(--primary); font-weight: bold; margin-bottom: 15px; }
         
-        .btn-contact { display: block; width: 100%; background: linear-gradient(45deg, var(--primary), #b0003a); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .btn-contact { display: block; width: 100%; background: linear-gradient(45deg, var(--primary), #b0003a); color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; transition: background 0.3s; }
+        .btn-contact:hover { opacity: 0.9; }
 
-        .auth-container { max-width: 450px; margin: 60px auto; padding: 40px; background-color: var(--card-bg); border-radius: 15px; border: 1px solid rgba(255, 42, 109, 0.2); }
-        .auth-container h2 { margin-bottom: 20px; color: var(--primary); text-align: center; }
+        .auth-container { max-width: 450px; margin: 60px auto; padding: 40px; background-color: var(--card-bg); border-radius: 15px; border: 1px solid rgba(255, 42, 109, 0.2); box-shadow: 0 0 30px rgba(0,0,0,0.3); }
+        .auth-container h2 { margin-bottom: 25px; color: var(--primary); text-align: center; font-size: 26px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-        .form-control { width: 100%; padding: 12px 15px; background-color: var(--dark-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; }
+        .form-control { width: 100%; padding: 12px 15px; background-color: var(--dark-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 15px; transition: border-color 0.3s; }
+        .form-control:focus { border-color: var(--secondary); }
         
-        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--secondary), #00a8b5); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--secondary), #00a8b5); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: opacity 0.3s; }
         .btn-submit.primary-btn { background: linear-gradient(45deg, var(--primary), #b0003a); color: white; }
+        .btn-submit:hover { opacity: 0.9; }
         .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
         .auth-switch span { color: var(--secondary); cursor: pointer; text-decoration: underline; }
 
         .panel-container { max-width: 800px; margin: 40px auto; padding: 20px; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
 
-        footer { background-color: #05050a; text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; }
+        footer { background-color: #05050a; text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; margin-top: 50px; }
     </style>
 
+    <!-- PROGRAMAÇÃO DINÂMICA INTEGRADA COM SEU FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ⚠️ SUBSTITUA O OBJETO ABAIXO PELAS CONFIGURAÇÕES DO SEU PROJETO NO FIREBASE ⚠️
+        // Suas chaves de conexão validadas
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_AUTH_DOMAIN",
-            databaseURL: "SUA_DATABASE_URL",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "SEU_STORAGE_BUCKET",
-            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-            appId: "SEU_APP_ID"
+            apiKey: "AIzaSyAn-xLCDcFmwnrVXbCESSkz5AL6oSL4GzI",
+            authDomain: "lovezone-2da3d.firebaseapp.com",
+            databaseURL: "https://lovezone-2da3d-default-rtdb.firebaseio.com",
+            projectId: "lovezone-2da3d",
+            storageBucket: "lovezone-2da3d.firebasestorage.app",
+            messagingSenderId: "851003440249",
+            appId: "1:851003440249:web:3449e87bb451535fc7e8a8"
         };
 
-        // Inicializa o Firebase
+        // Conectando com os servidores da Google
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Sessão Global do Usuário Logado
         let usuarioLogado = null;
 
-        // Elementos DOM de Telas
+        // Gerenciamento de Telas da Aplicação (Single Page Application)
         const secoes = {
             home: document.getElementById('section-home'),
             login: document.getElementById('section-login'),
@@ -197,7 +202,7 @@
             if(secaoAtiva === 'home') renderPerfis();
         }
 
-        // Navegação básica de botões
+        // Eventos Globais de Cliques nos Menus e Botões
         document.getElementById('logo-home').addEventListener('click', () => navegarPara('home'));
         document.getElementById('nav-home').addEventListener('click', () => navegarPara('home'));
         document.getElementById('go-to-register').addEventListener('click', () => navegarPara('register'));
@@ -214,11 +219,17 @@
             navegarPara('home');
         });
 
-        // --- CADASTRO NO FIREBASE ---
+        // --- SISTEMA DE CADASTRO REALS ---
         document.getElementById('form-register').addEventListener('submit', async function(e) {
             e.preventDefault();
             const userIn = document.getElementById('reg-username').value.trim().toLowerCase();
             const passIn = document.getElementById('reg-password').value;
+
+            const apenasLetrasEAlfanumericos = /^[a-z0-9_]+$/;
+            if(!apenasLetrasEAlfanumericos.test(userIn)) {
+                alert("O usuário deve conter apenas letras, números ou underline (_), sem espaços ou acentos.");
+                return;
+            }
 
             const dbRef = ref(db);
             try {
@@ -228,17 +239,17 @@
                     return;
                 }
                 
-                // Salva novo usuário no Firebase
                 await set(ref(db, 'usuarios/' + userIn), { password: passIn });
-                alert("Conta criada com sucesso!");
+                alert("Conta de modelo criada com sucesso! Redirecionando para login.");
                 document.getElementById('form-register').reset();
                 navegarPara('login');
             } catch (error) {
-                alert("Erro ao cadastrar: " + error.message);
+                console.error(error);
+                alert("Erro ao cadastrar: " + error.message + "\n\nVerifique se as regras do banco de dados estão públicas.");
             }
         });
 
-        // --- LOGIN NO FIREBASE ---
+        // --- SISTEMA DE AUTENTICAÇÃO / LOGIN ---
         document.getElementById('form-login').addEventListener('submit', async function(e) {
             e.preventDefault();
             const userIn = document.getElementById('login-username').value.trim().toLowerCase();
@@ -252,7 +263,7 @@
                     document.getElementById('btn-portal').innerText = "Meu Painel";
                     document.getElementById('user-display-name').innerText = userIn;
                     
-                    // Carrega dados do perfil se houver
+                    // Puxa os dados antigos se a modelo já tiver preenchido antes
                     const perfSnapshot = await get(child(dbRef, `perfis/${userIn}`));
                     if(perfSnapshot.exists()) {
                         const p = perfSnapshot.val();
@@ -261,6 +272,7 @@
                         document.getElementById('prof-cidade').value = p.cidade || 'Uberlândia';
                         document.getElementById('prof-servico').value = p.servico || 'Namorada de Aluguel';
                         document.getElementById('prof-valor').value = p.valor || '';
+                        document.getElementById('prof-whatsapp').value = p.whatsapp || '';
                         document.getElementById('prof-imagem').value = p.imagem || '';
                         document.getElementById('prof-descricao').value = p.descricao || '';
                     } else {
@@ -277,10 +289,16 @@
             }
         });
 
-        // --- ATUALIZAR/SALVAR PERFIL ---
+        // --- SALVAR INFORMAÇÕES DO PERFIL PÚBLICO ---
         document.getElementById('form-profile').addEventListener('submit', async function(e) {
             e.preventDefault();
             if(!usuarioLogado) return;
+
+            // Tratamento do número de WhatsApp para remover caracteres desnecessários
+            let wppLimpo = document.getElementById('prof-whatsapp').value.replace(/\D/g, '');
+            if(wppLimpo.length === 11 && !wppLimpo.startsWith('55')) {
+                wppLimpo = '55' + wppLimpo;
+            }
 
             const novoPerfil = {
                 username: usuarioLogado,
@@ -289,26 +307,27 @@
                 cidade: document.getElementById('prof-cidade').value,
                 servico: document.getElementById('prof-servico').value,
                 valor: document.getElementById('prof-valor').value,
+                whatsapp: wppLimpo,
                 imagem: document.getElementById('prof-imagem').value,
                 descricao: document.getElementById('prof-descricao').value
             };
 
             try {
                 await set(ref(db, 'perfis/' + usuarioLogado), novoPerfil);
-                alert("Perfil atualizado em tempo real para todos os usuários!");
+                alert("Perfil salvo com sucesso e já está disponível na página inicial!");
                 navegarPara('home');
             } catch (error) {
                 alert("Erro ao salvar perfil: " + error.message);
             }
         });
 
-        // --- MOSTRAR PERFIS NA HOME ---
+        // --- SISTEMA DE ALIMENTAÇÃO DA HOME EM TEMPO REAL ---
         const container = document.getElementById('profile-container');
         const cityFilter = document.getElementById('filter-city');
         const serviceFilter = document.getElementById('filter-service');
 
         async function renderPerfis() {
-            container.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Carregando perfis reais...</p>";
+            container.innerHTML = "<p style='text-align:center; grid-column:1/-1; color: var(--secondary);'>Carregando perfis em tempo real...</p>";
             
             try {
                 const snapshot = await get(child(ref(db), 'perfis'));
@@ -316,13 +335,13 @@
                 
                 let listaPerfis = [];
                 if (snapshot.exists()) {
-                    // Transforma o objeto do Firebase em array
                     Object.values(snapshot.val()).forEach(p => listaPerfis.push(p));
                 }
 
                 const cidadeSelecionada = cityFilter.value;
                 const servicoSelecionado = serviceFilter.value;
 
+                // Aplicação dos filtros inteligentes
                 const filtrados = listaPerfis.filter(perfil => {
                     const bateCidade = cidadeSelecionada === 'todos' || perfil.cidade === cidadeSelecionada;
                     const bateServico = servicoSelecionado === 'todos' || perfil.servico === servicoSelecionado;
@@ -330,13 +349,18 @@
                 });
                 
                 if(filtrados.length === 0) {
-                    container.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--text-muted);">Nenhum perfil cadastrado ou encontrado para os filtros.</p>`;
+                    container.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Nenhum perfil ativo encontrado para os filtros selecionados.</p>`;
                     return;
                 }
 
+                // Criação dinâmica dos cards
                 filtrados.forEach(perfil => {
                     const card = document.createElement('div');
                     card.className = 'profile-card';
+                    
+                    // Tratamento de segurança para link direto do WhatsApp da modelo
+                    const linkWhats = `https://wa.me/${perfil.whatsapp || '5500000000000'}?text=Olá%20${encodeURIComponent(perfil.nome)},%20vi%20seu%20perfil%20no%20Love%20Zone%20e%20gostaria de saber mais informações.`;
+
                     card.innerHTML = `
                         <div class="image-container">
                             <span class="tag-disponivel">Disponível</span>
@@ -347,25 +371,27 @@
                             <div class="profile-location">📍 ${perfil.cidade}</div>
                             <div class="profile-details">${perfil.descricao}</div>
                             <div class="profile-price">${perfil.valor}</div>
-                            <a href="https://wa.me/5500000000000?text=Olá%20${encodeURIComponent(perfil.nome)},%20vi%20seu%20perfil%20no%20Love%20Zone" target="_blank" class="btn-contact">Ver WhatsApp</a>
+                            <a href="${linkWhats}" target="_blank" class="btn-contact">Chamar no WhatsApp</a>
                         </div>
                     `;
                     container.appendChild(card);
                 });
             } catch (error) {
-                container.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Erro ao carregar dados do servidor.</p>";
+                console.error(error);
+                container.innerHTML = "<p style='text-align:center; grid-column:1/-1; color: var(--primary);'>Erro crítico ao ler dados do banco remoto.</p>";
             }
         }
 
         cityFilter.addEventListener('change', renderPerfis);
         serviceFilter.addEventListener('change', renderPerfis);
 
-        // Inicializa puxando os dados reais
+        // Inicializa o app puxando dados reais na primeira carga
         renderPerfis();
     </script>
 </head>
 <body>
 
+    <!-- Topo / Barra de Navegação -->
     <header>
         <div class="logo" id="logo-home">Love<span>Zone</span></div>
         <nav>
@@ -374,12 +400,14 @@
         </nav>
     </header>
 
+    <!-- TELA 1: HOME (PÚBLICA) -->
     <div id="section-home" class="page-section active">
         <section class="hero">
             <h1>Encontre a Companhia Perfeita</h1>
-            <p>Namoradas de aluguel e acompanhantes exclusivas para jantares, eventos, viagens ou momentos inesquecíveis.</p>
+            <p>Namoradas de aluguel e acompanhantes premium para jantares, eventos públicos, viagens corporativas ou momentos inesquecíveis.</p>
         </section>
 
+        <!-- Filtros Rápidos -->
         <div class="filters">
             <select class="filter-select" id="filter-city">
                 <option value="todos">Todas as Cidades</option>
@@ -401,70 +429,73 @@
         </main>
     </div>
 
+    <!-- TELA 2: LOGIN DA MODELO -->
     <div id="section-login" class="page-section">
         <div class="auth-container">
-            <h2>Acessar Minha Conta</h2>
+            <h2>Acessar Meu Painel</h2>
             <form id="form-login">
                 <div class="form-group">
                     <label>Usuário (Username)</label>
-                    <input type="text" id="login-username" class="form-control" required placeholder="Seu usuário">
+                    <input type="text" id="login-username" class="form-control" required placeholder="Seu usuário único">
                 </div>
                 <div class="form-group">
-                    <label>Senha</label>
+                    <label>Senha Secreta</label>
                     <input type="password" id="login-password" class="form-control" required placeholder="Sua senha">
                 </div>
-                <button type="submit" class="btn-submit primary-btn">Entrar</button>
+                <button type="submit" class="btn-submit primary-btn">Entrar na Conta</button>
             </form>
             <div class="auth-switch">
-                Não tem uma conta? <span id="go-to-register">Cadastre-se aqui</span>
+                Ainda não faz parte? <span id="go-to-register">Criar conta grátis</span>
             </div>
         </div>
     </div>
 
+    <!-- TELA 3: CADASTRO DE NOVAS CONTAS -->
     <div id="section-register" class="page-section">
         <div class="auth-container">
             <h2>Criar Conta de Modelo</h2>
             <form id="form-register">
                 <div class="form-group">
-                    <label>Escolha um Nome de Usuário</label>
+                    <label>Nome de Usuário (Sem espaços, acentos ou símbolos)</label>
                     <input type="text" id="reg-username" class="form-control" required placeholder="Ex: melissa_ribeiro">
                 </div>
                 <div class="form-group">
-                    <label>Crie uma Senha</label>
-                    <input type="password" id="reg-password" class="form-control" required placeholder="Mínimo 6 caracteres">
+                    <label>Crie uma Senha de Acesso</label>
+                    <input type="password" id="reg-password" class="form-control" required placeholder="Mínimo de 6 dígitos">
                 </div>
-                <button type="submit" class="btn-submit">Criar Conta</button>
+                <button type="submit" class="btn-submit">Registrar Minha Conta</button>
             </form>
             <div class="auth-switch">
-                Já possui conta? <span id="go-to-login">Faça Login</span>
+                Já possui acesso? <span id="go-to-login">Ir para o Login</span>
             </div>
         </div>
     </div>
 
+    <!-- TELA 4: PAINEL ADMINISTRATIVO DA MODELO -->
     <div id="section-dashboard" class="page-section">
         <div class="panel-container">
             <div class="panel-header">
-                <h2>Área da Modelo: <span id="user-display-name" style="color: var(--secondary);"></span></h2>
-                <button class="btn-nav-portal" id="btn-logout" style="border-color: #ff3333; color: #ff3333;">Sair</button>
+                <h2>Bem-vinda, <span id="user-display-name" style="color: var(--secondary);"></span>!</h2>
+                <button class="btn-nav-portal" id="btn-logout" style="border-color: #ff3333; color: #ff3333;">Desconectar</button>
             </div>
             
-            <div class="auth-container" style="max-width: 100%; margin: 0;">
-                <h3 style="margin-bottom: 20px; color: var(--secondary);">Configurar Informações do Perfil Público</h3>
+            <div class="auth-container" style="max-width: 100%; margin: 0; padding: 30px;">
+                <h3 style="margin-bottom: 25px; color: var(--secondary); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">Editar Perfil Público</h3>
                 <form id="form-profile">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
                             <label>Nome Artístico</label>
-                            <input type="text" id="prof-nome" class="form-control" required>
+                            <input type="text" id="prof-nome" class="form-control" required placeholder="Ex: Melissa Ribeiro">
                         </div>
                         <div class="form-group">
-                            <label>Idade</label>
-                            <input type="number" id="prof-idade" class="form-control" required>
+                            <label>Idade Atual</label>
+                            <input type="number" id="prof-idade" class="form-control" required placeholder="Ex: 22">
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
-                            <label>Cidade de Atendimento</label>
+                            <label>Cidade Ativa</label>
                             <select id="prof-cidade" class="form-control" required>
                                 <option value="Uberlândia">Uberlândia</option>
                                 <option value="São Paulo">São Paulo</option>
@@ -472,7 +503,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Especialidade Principal</label>
+                            <label>Serviço / Foco</label>
                             <select id="prof-servico" class="form-control" required>
                                 <option value="Namorada de Aluguel">Namorada de Aluguel</option>
                                 <option value="Eventos e Jantares">Eventos e Jantares</option>
@@ -481,19 +512,25 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Preço e Cobrança</label>
-                        <input type="text" id="prof-valor" class="form-control" required placeholder="Ex: R$ 300 / hora">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Valor / Cache</label>
+                            <input type="text" id="prof-valor" class="form-control" required placeholder="Ex: R$ 350 / hora">
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp (Com DDD e sem espaços)</label>
+                            <input type="text" id="prof-whatsapp" class="form-control" required placeholder="Ex: 34999998888">
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>URL de uma Foto de Perfil (Link de Imagem pública)</label>
-                        <input type="url" id="prof-imagem" class="form-control" required>
+                        <label>Link / URL de uma Foto de Perfil (Hospedagem pública)</label>
+                        <input type="url" id="prof-imagem" class="form-control" required placeholder="https://exemplo.com/suafoto.jpg">
                     </div>
 
                     <div class="form-group">
-                        <label>Descrição / Apresentação Pessoal</label>
-                        <textarea id="prof-descricao" class="form-control" rows="4" required></textarea>
+                        <label>Biografia / Sobre Você</label>
+                        <textarea id="prof-descricao" class="form-control" rows="4" required placeholder="Conte um pouco sobre suas características, gostos e como funciona seu atendimento..."></textarea>
                     </div>
 
                     <button type="submit" class="btn-submit primary-btn">Salvar e Publicar Perfil</button>
@@ -502,9 +539,10 @@
         </div>
     </div>
 
+    <!-- Rodapé -->
     <footer>
         <p>&copy; 2026 Love Zone. Todos os direitos reservados.</p>
-        <p style="margin-top: 10px; font-size: 12px; color: #666;">Conteúdo destinado estritamente para maiores de 18 anos.</p>
+        <p style="margin-top: 10px; font-size: 12px; color: #555;">Plataforma restrita estritamente para maiores de 18 anos de idade.</p>
     </footer>
 </body>
 </html>
