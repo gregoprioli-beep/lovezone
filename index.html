@@ -165,12 +165,10 @@
         footer { background-color: #05050a; text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; margin-top: 50px; }
     </style>
 
-    <!-- PROGRAMAÇÃO DINÂMICA INTEGRADA COM SEU FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Suas chaves de conexão validadas
         const firebaseConfig = {
             apiKey: "AIzaSyAn-xLCDcFmwnrVXbCESSkz5AL6oSL4GzI",
             authDomain: "lovezone-2da3d.firebaseapp.com",
@@ -181,13 +179,11 @@
             appId: "1:851003440249:web:3449e87bb451535fc7e8a8"
         };
 
-        // Conectando com os servidores da Google
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         let usuarioLogado = null;
 
-        // Gerenciamento de Telas da Aplicação (Single Page Application)
         const secoes = {
             home: document.getElementById('section-home'),
             login: document.getElementById('section-login'),
@@ -202,7 +198,6 @@
             if(secaoAtiva === 'home') renderPerfis();
         }
 
-        // Eventos Globais de Cliques nos Menus e Botões
         document.getElementById('logo-home').addEventListener('click', () => navegarPara('home'));
         document.getElementById('nav-home').addEventListener('click', () => navegarPara('home'));
         document.getElementById('go-to-register').addEventListener('click', () => navegarPara('register'));
@@ -219,7 +214,7 @@
             navegarPara('home');
         });
 
-        // --- SISTEMA DE CADASTRO REALS ---
+        // --- CADASTRO ---
         document.getElementById('form-register').addEventListener('submit', async function(e) {
             e.preventDefault();
             const userIn = document.getElementById('reg-username').value.trim().toLowerCase();
@@ -245,11 +240,11 @@
                 navegarPara('login');
             } catch (error) {
                 console.error(error);
-                alert("Erro ao cadastrar: " + error.message + "\n\nVerifique se as regras do banco de dados estão públicas.");
+                alert("Erro ao cadastrar: " + error.message);
             }
         });
 
-        // --- SISTEMA DE AUTENTICAÇÃO / LOGIN ---
+        // --- LOGIN ---
         document.getElementById('form-login').addEventListener('submit', async function(e) {
             e.preventDefault();
             const userIn = document.getElementById('login-username').value.trim().toLowerCase();
@@ -263,13 +258,12 @@
                     document.getElementById('btn-portal').innerText = "Meu Painel";
                     document.getElementById('user-display-name').innerText = userIn;
                     
-                    // Puxa os dados antigos se a modelo já tiver preenchido antes
                     const perfSnapshot = await get(child(dbRef, `perfis/${userIn}`));
                     if(perfSnapshot.exists()) {
                         const p = perfSnapshot.val();
                         document.getElementById('prof-nome').value = p.nome || '';
                         document.getElementById('prof-idade').value = p.idade || '';
-                        document.getElementById('prof-cidade').value = p.cidade || 'Uberlândia';
+                        document.getElementById('prof-cidade').value = p.cidade || '';
                         document.getElementById('prof-servico').value = p.servico || 'Namorada de Aluguel';
                         document.getElementById('prof-valor').value = p.valor || '';
                         document.getElementById('prof-whatsapp').value = p.whatsapp || '';
@@ -289,22 +283,25 @@
             }
         });
 
-        // --- SALVAR INFORMAÇÕES DO PERFIL PÚBLICO ---
+        // --- SALVAR PERFIL ---
         document.getElementById('form-profile').addEventListener('submit', async function(e) {
             e.preventDefault();
             if(!usuarioLogado) return;
 
-            // Tratamento do número de WhatsApp para remover caracteres desnecessários
             let wppLimpo = document.getElementById('prof-whatsapp').value.replace(/\D/g, '');
             if(wppLimpo.length === 11 && !wppLimpo.startsWith('55')) {
                 wppLimpo = '55' + wppLimpo;
             }
 
+            // Garante que o nome da cidade fique padronizado (Primeira Letra Maiúscula)
+            let cidadeFormatada = document.getElementById('prof-cidade').value.trim();
+            cidadeFormatada = cidadeFormatada.charAt(0).toUpperCase() + cidadeFormatada.slice(1).toLowerCase();
+
             const novoPerfil = {
                 username: usuarioLogado,
                 nome: document.getElementById('prof-nome').value,
                 idade: parseInt(document.getElementById('prof-idade').value),
-                cidade: document.getElementById('prof-cidade').value,
+                cidade: cidadeFormatada,
                 servico: document.getElementById('prof-servico').value,
                 valor: document.getElementById('prof-valor').value,
                 whatsapp: wppLimpo,
@@ -314,52 +311,69 @@
 
             try {
                 await set(ref(db, 'perfis/' + usuarioLogado), novoPerfil);
-                alert("Perfil salvo com sucesso e já está disponível na página inicial!");
+                alert("Perfil salvo com sucesso!");
                 navegarPara('home');
             } catch (error) {
                 alert("Erro ao salvar perfil: " + error.message);
             }
         });
 
-        // --- SISTEMA DE ALIMENTAÇÃO DA HOME EM TEMPO REAL ---
+        // --- EXIBIR PERFIS E ATUALIZAR FILTRO DE CIDADES ---
         const container = document.getElementById('profile-container');
         const cityFilter = document.getElementById('filter-city');
         const serviceFilter = document.getElementById('filter-service');
 
         async function renderPerfis() {
-            container.innerHTML = "<p style='text-align:center; grid-column:1/-1; color: var(--secondary);'>Carregando perfis em tempo real...</p>";
+            container.innerHTML = "<p style='text-align:center; grid-column:1/-1; color: var(--secondary);'>Carregando...</p>";
             
             try {
                 const snapshot = await get(child(ref(db), 'perfis'));
-                container.innerHTML = "";
                 
                 let listaPerfis = [];
                 if (snapshot.exists()) {
                     Object.values(snapshot.val()).forEach(p => listaPerfis.push(p));
                 }
 
+                // 🌟 MÁGICA AQUI: Atualiza as opções do filtro de cidades dinamicamente!
+                const cidadeAtualSelecionada = cityFilter.value; 
+                cityFilter.innerHTML = '<option value="todos">Todas as Cidades</option>';
+                
+                // Pega todas as cidades cadastradas pelas modelos e remove duplicadas
+                const cidadesExistentes = [...new Set(listaPerfis.map(p => p.cidade).filter(c => c))];
+                
+                cidadesExistentes.sort().forEach(cidade => {
+                    const option = document.createElement('option');
+                    option.value = cidade;
+                    option.innerText = cidade;
+                    cityFilter.appendChild(option);
+                });
+
+                // Mantém a cidade selecionada se ela ainda existir
+                if (cidadesExistentes.includes(cidadeAtualSelecionada)) {
+                    cityFilter.value = cidadeAtualSelecionada;
+                }
+
+                // Aplicação dos filtros para exibição dos cards
                 const cidadeSelecionada = cityFilter.value;
                 const servicoSelecionado = serviceFilter.value;
 
-                // Aplicação dos filtros inteligentes
                 const filtrados = listaPerfis.filter(perfil => {
                     const bateCidade = cidadeSelecionada === 'todos' || perfil.cidade === cidadeSelecionada;
                     const bateServico = servicoSelecionado === 'todos' || perfil.servico === servicoSelecionado;
                     return bateCidade && bateServico;
                 });
                 
+                container.innerHTML = "";
+
                 if(filtrados.length === 0) {
-                    container.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Nenhum perfil ativo encontrado para os filtros selecionados.</p>`;
+                    container.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Nenhum perfil ativo encontrado.</p>`;
                     return;
                 }
 
-                // Criação dinâmica dos cards
                 filtrados.forEach(perfil => {
                     const card = document.createElement('div');
                     card.className = 'profile-card';
-                    
-                    // Tratamento de segurança para link direto do WhatsApp da modelo
-                    const linkWhats = `https://wa.me/${perfil.whatsapp || '5500000000000'}?text=Olá%20${encodeURIComponent(perfil.nome)},%20vi%20seu%20perfil%20no%20Love%20Zone%20e%20gostaria de saber mais informações.`;
+                    const linkWhats = `https://wa.me/${perfil.whatsapp || '5500000000000'}?text=Olá%20${encodeURIComponent(perfil.nome)},%20vi%20seu%20perfil%20no%20Love%20Zone!`;
 
                     card.innerHTML = `
                         <div class="image-container">
@@ -378,20 +392,18 @@
                 });
             } catch (error) {
                 console.error(error);
-                container.innerHTML = "<p style='text-align:center; grid-column:1/-1; color: var(--primary);'>Erro crítico ao ler dados do banco remoto.</p>";
+                container.innerHTML = "<p style='text-align:center; grid-column:1/-1; color: var(--primary);'>Erro ao ler dados.</p>";
             }
         }
 
         cityFilter.addEventListener('change', renderPerfis);
         serviceFilter.addEventListener('change', renderPerfis);
 
-        // Inicializa o app puxando dados reais na primeira carga
         renderPerfis();
     </script>
 </head>
 <body>
 
-    <!-- Topo / Barra de Navegação -->
     <header>
         <div class="logo" id="logo-home">Love<span>Zone</span></div>
         <nav>
@@ -400,21 +412,16 @@
         </nav>
     </header>
 
-    <!-- TELA 1: HOME (PÚBLICA) -->
     <div id="section-home" class="page-section active">
         <section class="hero">
             <h1>Encontre a Companhia Perfeita</h1>
             <p>Namoradas de aluguel e acompanhantes premium para jantares, eventos públicos, viagens corporativas ou momentos inesquecíveis.</p>
         </section>
 
-        <!-- Filtros Rápidos -->
         <div class="filters">
             <select class="filter-select" id="filter-city">
                 <option value="todos">Todas as Cidades</option>
-                <option value="Uberlândia">Uberlândia</option>
-                <option value="São Paulo">São Paulo</option>
-                <option value="Rio de Janeiro">Rio de Janeiro</option>
-            </select>
+                </select>
 
             <select class="filter-select" id="filter-service">
                 <option value="todos">Todos os Serviços</option>
@@ -429,7 +436,6 @@
         </main>
     </div>
 
-    <!-- TELA 2: LOGIN DA MODELO -->
     <div id="section-login" class="page-section">
         <div class="auth-container">
             <h2>Acessar Meu Painel</h2>
@@ -450,7 +456,6 @@
         </div>
     </div>
 
-    <!-- TELA 3: CADASTRO DE NOVAS CONTAS -->
     <div id="section-register" class="page-section">
         <div class="auth-container">
             <h2>Criar Conta de Modelo</h2>
@@ -471,7 +476,6 @@
         </div>
     </div>
 
-    <!-- TELA 4: PAINEL ADMINISTRATIVO DA MODELO -->
     <div id="section-dashboard" class="page-section">
         <div class="panel-container">
             <div class="panel-header">
@@ -495,12 +499,8 @@
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
-                            <label>Cidade Ativa</label>
-                            <select id="prof-cidade" class="form-control" required>
-                                <option value="Uberlândia">Uberlândia</option>
-                                <option value="São Paulo">São Paulo</option>
-                                <option value="Rio de Janeiro">Rio de Janeiro</option>
-                            </select>
+                            <label>Cidade de Atendimento (Digite o nome da sua cidade)</label>
+                            <input type="text" id="prof-cidade" class="form-control" required placeholder="Ex: Uberlândia">
                         </div>
                         <div class="form-group">
                             <label>Serviço / Foco</label>
@@ -530,7 +530,7 @@
 
                     <div class="form-group">
                         <label>Biografia / Sobre Você</label>
-                        <textarea id="prof-descricao" class="form-control" rows="4" required placeholder="Conte um pouco sobre suas características, gostos e como funciona seu atendimento..."></textarea>
+                        <textarea id="prof-descricao" class="form-control" rows="4" required placeholder="Conte um pouco sobre suas características..."></textarea>
                     </div>
 
                     <button type="submit" class="btn-submit primary-btn">Salvar e Publicar Perfil</button>
@@ -539,7 +539,6 @@
         </div>
     </div>
 
-    <!-- Rodapé -->
     <footer>
         <p>&copy; 2026 Love Zone. Todos os direitos reservados.</p>
         <p style="margin-top: 10px; font-size: 12px; color: #555;">Plataforma restrita estritamente para maiores de 18 anos de idade.</p>
