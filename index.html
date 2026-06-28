@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="Love Zone">
     <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=192&auto=format&fit=crop">
 
-    <!-- Injeção Automática do Manifest.json via Data URI -->
+    <!-- Injeção Automática do Manifest.json via Data URI (Sem precisar de arquivo externo) -->
     <script>
         const manifest = {
             "id": "/lovezone",
@@ -196,49 +196,51 @@
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--secondary), #00a8b5); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: opacity 0.3s; }
         .btn-submit.primary-btn { background: linear-gradient(45deg, var(--primary), #b0003a); color: white; }
         .btn-submit:hover { opacity: 0.9; }
-        .btn-submit:disabled { background: #555 !important; color: #aaa; cursor: not-allowed; }
         .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
         .auth-switch span { color: var(--secondary); cursor: pointer; text-decoration: underline; }
 
         .panel-container { max-width: 800px; margin: 40px auto; padding: 20px; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
 
-        /* Estilo do preview de imagem e upload */
-        .preview-container { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
-        .img-preview { width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: 2px solid var(--secondary); display: none; }
-
+        /* Banner de incentivo de instalação */
         #pwa-install-banner {
-            display: none; justify-content: space-between; align-items: center; background: linear-gradient(45deg, var(--primary), #b0003a);
-            padding: 12px 5%; color: white; position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(45deg, var(--primary), #b0003a);
+            padding: 12px 5%;
+            color: white;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 9999;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
         }
-        #pwa-install-banner button { background-color: white; color: black; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        #pwa-install-banner button {
+            background-color: white; color: black; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;
+        }
 
         footer { background-color: #05050a; text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; margin-top: 50px; }
     </style>
 
-    <!-- PROGRAMAÇÃO DINÂMICA INTEGRADA COM SEU FIREBASE (DATABASE + STORAGE) -->
+    <!-- PROGRAMAÇÃO DINÂMICA INTEGRADA COM SEU FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        // 🌟 IMPORTANTE: Importando o Firebase Storage para upload de arquivos
-        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAn-xLCDcFmwnrVXbCESSkz5AL6oSL4GzI",
             authDomain: "lovezone-2da3d.firebaseapp.com",
             databaseURL: "https://lovezone-2da3d-default-rtdb.firebaseio.com",
             projectId: "lovezone-2da3d",
-            storageBucket: "lovezone-2da3d.firebasestorage.app", // Alvo dos uploads
+            storageBucket: "lovezone-2da3d.firebasestorage.app",
             messagingSenderId: "851003440249",
             appId: "1:851003440249:web:3449e87bb451535fc7e8a8"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const storage = getStorage(app); // Inicializando o Storage
 
         let usuarioLogado = null;
-        let urlImagemExistente = ""; // Guarda o link caso ela decida manter a foto antiga
 
         const secoes = {
             home: document.getElementById('section-home'),
@@ -270,18 +272,7 @@
             navegarPara('home');
         });
 
-        // --- PREVIEW DA IMAGEM SELECIONADA ---
-        const fileInput = document.getElementById('prof-imagem');
-        const imgPreview = document.getElementById('img-preview');
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                imgPreview.src = URL.createObjectURL(file);
-                imgPreview.style.display = 'block';
-            }
-        });
-
-        // --- CADASTRO DE MODELO ---
+        // --- CADASTRO ---
         document.getElementById('form-register').addEventListener('submit', async function(e) {
             e.preventDefault();
             const userIn = document.getElementById('reg-username').value.trim().toLowerCase();
@@ -325,11 +316,6 @@
                     document.getElementById('btn-portal').innerText = "Meu Painel";
                     document.getElementById('user-display-name').innerText = userIn;
                     
-                    // Reset do preview
-                    imgPreview.style.display = 'none';
-                    imgPreview.src = '';
-                    urlImagemExistente = "";
-
                     const perfSnapshot = await get(child(dbRef, `perfis/${userIn}`));
                     if(perfSnapshot.exists()) {
                         const p = perfSnapshot.val();
@@ -339,13 +325,8 @@
                         document.getElementById('prof-servico').value = p.servico || 'Namorada de Aluguel';
                         document.getElementById('prof-valor').value = p.valor || '';
                         document.getElementById('prof-whatsapp').value = p.whatsapp || '';
+                        document.getElementById('prof-imagem').value = p.imagem || '';
                         document.getElementById('prof-descricao').value = p.descricao || '';
-                        
-                        if (p.imagem) {
-                            urlImagemExistente = p.imagem;
-                            imgPreview.src = p.imagem;
-                            imgPreview.style.display = 'block';
-                        }
                     } else {
                         document.getElementById('form-profile').reset();
                     }
@@ -360,72 +341,41 @@
             }
         });
 
-        // --- SALVAR PERFIL COM UPLOAD AUTOMÁTICO DE IMAGEM ---
+        // --- SALVAR PERFIL ---
         document.getElementById('form-profile').addEventListener('submit', async function(e) {
             e.preventDefault();
             if(!usuarioLogado) return;
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const file = fileInput.files[0];
-            let urlFinal = urlImagemExistente;
-
-            // Se ela não escolheu uma foto nova e também não tem foto antiga cadastrada
-            if (!file && !urlFinal) {
-                alert("Por favor, selecione uma foto para o seu perfil.");
-                return;
+            let wppLimpo = document.getElementById('prof-whatsapp').value.replace(/\D/g, '');
+            if(wppLimpo.length === 11 && !wppLimpo.startsWith('55')) {
+                wppLimpo = '55' + wppLimpo;
             }
 
+            let cidadeFormatada = document.getElementById('prof-cidade').value.trim();
+            cidadeFormatada = cidadeFormatada.charAt(0).toUpperCase() + cidadeFormatada.slice(1).toLowerCase();
+
+            const novoPerfil = {
+                username: usuarioLogado,
+                nome: document.getElementById('prof-nome').value,
+                idade: parseInt(document.getElementById('prof-idade').value),
+                cidade: cidadeFormatada,
+                servico: document.getElementById('prof-servico').value,
+                valor: document.getElementById('prof-valor').value,
+                whatsapp: wppLimpo,
+                imagem: document.getElementById('prof-imagem').value,
+                descricao: document.getElementById('prof-descricao').value
+            };
+
             try {
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Enviando Imagem, por favor aguarde...";
-
-                // 🌟 MÁGICA DO UPLOAD: Se houver um arquivo novo selecionado do dispositivo
-                if (file) {
-                    // Define o caminho no Storage (Ex: perfis/melissa_ribeiro_171500000.jpg)
-                    const extensao = file.name.split('.').pop();
-                    const caminhoArquivo = `perfis/${usuarioLogado}_${Date.now()}.${extensao}`;
-                    const storageRef = sRef(storage, caminhoArquivo);
-
-                    // Faz o upload dos Bytes puros do arquivo
-                    await uploadBytes(storageRef, file);
-                    // Captura a URL pública definitiva do arquivo hospedado no Firebase
-                    urlFinal = await getDownloadURL(storageRef);
-                }
-
-                let wppLimpo = document.getElementById('prof-whatsapp').value.replace(/\D/g, '');
-                if(wppLimpo.length === 11 && !wppLimpo.startsWith('55')) {
-                    wppLimpo = '55' + wppLimpo;
-                }
-
-                let cidadeFormatada = document.getElementById('prof-cidade').value.trim();
-                cidadeFormatada = cidadeFormatada.charAt(0).toUpperCase() + cidadeFormatada.slice(1).toLowerCase();
-
-                const novoPerfil = {
-                    username: usuarioLogado,
-                    nome: document.getElementById('prof-nome').value,
-                    idade: parseInt(document.getElementById('prof-idade').value),
-                    cidade: cidadeFormatada,
-                    servico: document.getElementById('prof-servico').value,
-                    valor: document.getElementById('prof-valor').value,
-                    whatsapp: wppLimpo,
-                    imagem: urlFinal, // Gravando a URL do Firebase Storage no banco de dados
-                    descricao: document.getElementById('prof-descricao').value
-                };
-
                 await set(ref(db, 'perfis/' + usuarioLogado), novoPerfil);
-                alert("Perfil e foto salvos com sucesso!");
-                fileInput.value = ""; // Limpa campo de arquivo
+                alert("Perfil salvo com sucesso!");
                 navegarPara('home');
             } catch (error) {
-                console.error(error);
-                alert("Erro ao salvar perfil ou fazer upload: " + error.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Salvar e Publicar Perfil";
+                alert("Erro ao salvar perfil: " + error.message);
             }
         });
 
-        // --- EXIBIR PERFIS E FILTROS ---
+        // --- EXIBIR PERFIS E ATUALIZAR FILTRO DE CIDADES ---
         const container = document.getElementById('profile-container');
         const cityFilter = document.getElementById('filter-city');
         const serviceFilter = document.getElementById('filter-service');
@@ -445,6 +395,7 @@
                 cityFilter.innerHTML = '<option value="todos">Todas as Cidades</option>';
                 
                 const cidadesExistentes = [...new Set(listaPerfis.map(p => p.cidade).filter(c => c))];
+                
                 cidadesExistentes.sort().forEach(cidade => {
                     const option = document.createElement('option');
                     option.value = cidade;
@@ -504,21 +455,35 @@
         renderPerfis();
     </script>
 
-    <!-- LOGICA ADICIONAL PWA -->
+    <!-- INSTALAÇÃO DO SERVICE WORKER ATRAVÉS DE DATA URI -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
+                // Código do Service Worker mínimo necessário para o PWA funcionar em modo Offline básico
                 const swCode = `
-                    self.addEventListener('install', (e) => self.skipWaiting());
-                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-                    self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+                    const CACHE_NAME = 'lovezone-v1';
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        // Apenas responde de forma nativa repassando a requisição para a rede
+                        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                    });
                 `;
+                
                 const blob = new Blob([swCode], { type: 'application/javascript' });
                 const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl, { scope: './' }).catch(err => console.log(err));
+
+                navigator.serviceWorker.register(swUrl, { scope: './' })
+                    .then(reg => console.log('PWA carregado com sucesso!', reg))
+                    .catch(err => console.log('Erro ao registrar PWA:', err));
             });
         }
 
+        // Lógica do botão flutuante/banner de instalação (Para Android/Chrome)
         let deferredPrompt;
         const installBanner = document.getElementById('pwa-install-banner');
         const installBtn = document.getElementById('btn-pwa-install');
@@ -526,6 +491,7 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            // Exibe a barra de aviso no rodapé para instalar o app
             if(installBanner) installBanner.style.display = 'flex';
         });
 
@@ -533,7 +499,8 @@
             installBtn.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
-                    await deferredPrompt.userChoice;
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`Resposta da instalação: ${outcome}`);
                     deferredPrompt = null;
                     if(installBanner) installBanner.style.display = 'none';
                 }
@@ -673,13 +640,9 @@
                         </div>
                     </div>
 
-                    <!-- 🌟 MUDANÇA AQUI: Campo alterado de URL para FILE e inclusão de Preview Redondo -->
                     <div class="form-group">
-                        <label>Foto de Perfil (Selecione um arquivo do seu dispositivo)</label>
-                        <div class="preview-container">
-                            <img id="img-preview" class="img-preview" alt="Preview da Foto">
-                            <input type="file" id="prof-imagem" class="form-control" accept="image/*" style="padding: 8px 15px;">
-                        </div>
+                        <label>Link / URL de uma Foto de Perfil</label>
+                        <input type="url" id="prof-imagem" class="form-control" required placeholder="https://exemplo.com/suafoto.jpg">
                     </div>
 
                     <div class="form-group">
