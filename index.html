@@ -4,6 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Love Zone | Acompanhantes e Namoradas de Aluguel</title>
+    
+    <!-- Configurações PWA fundamentais para iOS (iPhone) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Love Zone">
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=192&auto=format&fit=crop">
+
+    <!-- Injeção Automática do Manifest.json via Data URI (Sem precisar de arquivo externo) -->
+    <script>
+        const manifest = {
+            "id": "/lovezone",
+            "name": "Love Zone",
+            "short_name": "Love Zone",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#0a0a12",
+            "theme_color": "#ff2a6d",
+            "orientation": "portrait",
+            "icons": [
+                {
+                    "src": "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=192&auto=format&fit=crop",
+                    "sizes": "192x192",
+                    "type": "image/jpeg"
+                },
+                {
+                    "src": "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=512&auto=format&fit=crop",
+                    "sizes": "512x512",
+                    "type": "image/jpeg"
+                }
+            ]
+        };
+        const stringManifest = JSON.stringify(manifest);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+    </script>
+
     <style>
         /* --- ESTILOS NATIVOS E MODERNOS (CSS) --- */
         :root {
@@ -162,9 +202,27 @@
         .panel-container { max-width: 800px; margin: 40px auto; padding: 20px; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
 
+        /* Banner de incentivo de instalação */
+        #pwa-install-banner {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(45deg, var(--primary), #b0003a);
+            padding: 12px 5%;
+            color: white;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 9999;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+        }
+        #pwa-install-banner button {
+            background-color: white; color: black; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;
+        }
+
         footer { background-color: #05050a; text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; margin-top: 50px; }
     </style>
 
+    <!-- PROGRAMAÇÃO DINÂMICA INTEGRADA COM SEU FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -293,7 +351,6 @@
                 wppLimpo = '55' + wppLimpo;
             }
 
-            // Garante que o nome da cidade fique padronizado (Primeira Letra Maiúscula)
             let cidadeFormatada = document.getElementById('prof-cidade').value.trim();
             cidadeFormatada = cidadeFormatada.charAt(0).toUpperCase() + cidadeFormatada.slice(1).toLowerCase();
 
@@ -334,11 +391,9 @@
                     Object.values(snapshot.val()).forEach(p => listaPerfis.push(p));
                 }
 
-                // 🌟 MÁGICA AQUI: Atualiza as opções do filtro de cidades dinamicamente!
                 const cidadeAtualSelecionada = cityFilter.value; 
                 cityFilter.innerHTML = '<option value="todos">Todas as Cidades</option>';
                 
-                // Pega todas as cidades cadastradas pelas modelos e remove duplicadas
                 const cidadesExistentes = [...new Set(listaPerfis.map(p => p.cidade).filter(c => c))];
                 
                 cidadesExistentes.sort().forEach(cidade => {
@@ -348,12 +403,10 @@
                     cityFilter.appendChild(option);
                 });
 
-                // Mantém a cidade selecionada se ela ainda existir
                 if (cidadesExistentes.includes(cidadeAtualSelecionada)) {
                     cityFilter.value = cidadeAtualSelecionada;
                 }
 
-                // Aplicação dos filtros para exibição dos cards
                 const cidadeSelecionada = cityFilter.value;
                 const servicoSelecionado = serviceFilter.value;
 
@@ -401,9 +454,69 @@
 
         renderPerfis();
     </script>
+
+    <!-- INSTALAÇÃO DO SERVICE WORKER ATRAVÉS DE DATA URI -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Código do Service Worker mínimo necessário para o PWA funcionar em modo Offline básico
+                const swCode = `
+                    const CACHE_NAME = 'lovezone-v1';
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        // Apenas responde de forma nativa repassando a requisição para a rede
+                        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+
+                navigator.serviceWorker.register(swUrl, { scope: './' })
+                    .then(reg => console.log('PWA carregado com sucesso!', reg))
+                    .catch(err => console.log('Erro ao registrar PWA:', err));
+            });
+        }
+
+        // Lógica do botão flutuante/banner de instalação (Para Android/Chrome)
+        let deferredPrompt;
+        const installBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('btn-pwa-install');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Exibe a barra de aviso no rodapé para instalar o app
+            if(installBanner) installBanner.style.display = 'flex';
+        });
+
+        if(installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`Resposta da instalação: ${outcome}`);
+                    deferredPrompt = null;
+                    if(installBanner) installBanner.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 
+    <!-- Banner de Instalação do Aplicativo (PWA) -->
+    <div id="pwa-install-banner">
+        <span>Instale o Love Zone no seu celular para acessar mais rápido!</span>
+        <button id="btn-pwa-install">Instalar</button>
+    </div>
+
+    <!-- Header -->
     <header>
         <div class="logo" id="logo-home">Love<span>Zone</span></div>
         <nav>
@@ -412,6 +525,7 @@
         </nav>
     </header>
 
+    <!-- TELA 1: HOME -->
     <div id="section-home" class="page-section active">
         <section class="hero">
             <h1>Encontre a Companhia Perfeita</h1>
@@ -421,7 +535,7 @@
         <div class="filters">
             <select class="filter-select" id="filter-city">
                 <option value="todos">Todas as Cidades</option>
-                </select>
+            </select>
 
             <select class="filter-select" id="filter-service">
                 <option value="todos">Todos os Serviços</option>
@@ -436,6 +550,7 @@
         </main>
     </div>
 
+    <!-- TELA 2: LOGIN -->
     <div id="section-login" class="page-section">
         <div class="auth-container">
             <h2>Acessar Meu Painel</h2>
@@ -456,6 +571,7 @@
         </div>
     </div>
 
+    <!-- TELA 3: CADASTRO -->
     <div id="section-register" class="page-section">
         <div class="auth-container">
             <h2>Criar Conta de Modelo</h2>
@@ -476,6 +592,7 @@
         </div>
     </div>
 
+    <!-- TELA 4: PAINEL DA MODELO -->
     <div id="section-dashboard" class="page-section">
         <div class="panel-container">
             <div class="panel-header">
@@ -499,7 +616,7 @@
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
-                            <label>Cidade de Atendimento (Digite o nome da sua cidade)</label>
+                            <label>Cidade de Atendimento</label>
                             <input type="text" id="prof-cidade" class="form-control" required placeholder="Ex: Uberlândia">
                         </div>
                         <div class="form-group">
@@ -524,7 +641,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Link / URL de uma Foto de Perfil (Hospedagem pública)</label>
+                        <label>Link / URL de uma Foto de Perfil</label>
                         <input type="url" id="prof-imagem" class="form-control" required placeholder="https://exemplo.com/suafoto.jpg">
                     </div>
 
